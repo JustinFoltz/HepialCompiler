@@ -1,0 +1,18 @@
+programme testDeclar
+    entier i, j, k, nb, dec;
+debutprg
+    ecrireln "Choisissez un entier :";
+    lire nb;
+    dec = nb;
+    pour i allantde 0 à nb faire
+        k = (2*i)+1;
+        pour j allantde 1 à dec faire
+            ecrire " ";
+        finpour
+        dec = dec - 1;
+        pour j allantde 0 à k faire
+            ecrire "*";
+        finpour
+        ecrireln "";
+    finpour
+finprg

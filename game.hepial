@@ -1,0 +1,31 @@
+programme testDeclar
+    entier x, n, i, max;
+debutprg
+    x = 16;
+    n = 0;
+    i = 1;
+    max = 5;
+    
+    tantque x <> n faire
+        ecrire "Tentative n°";
+        ecrire i;
+        ecrire "/";
+        ecrireln max;
+        ecrireln "Choisissez un entier entre 0 et 50 :";
+        lire n;
+        si n < x alors
+            ecrireln "\ntrop petit\n";
+        finsi 
+        si n > x alors
+            ecrireln "\ntrop grand\n";
+        finsi
+        si x == n alors
+             ecrireln "\nbravo !!\n";
+        finsi
+        i = i + 1;
+        si i > max alors
+            ecrireln "perdu";
+            x = n;
+        finsi
+    fintantque
+finprg

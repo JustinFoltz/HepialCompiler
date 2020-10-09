@@ -1,0 +1,168 @@
+import java_cup.runtime.*;
+import java.util.Vector;
+import java.io.*;
+import java.util.*;
+
+action code {:
+
+    public void errorIdAlreadyDefined(Identifiant id) {
+        System.out.println("Error [" + id.getLine()+":"+id.getCol()+"] -> variable \""+ id.getNom() + "\" déja déclarée");
+        System.exit(0);
+    }
+
+    public void errorIdNotDefined(Identifiant id) {
+        System.out.println("Error [" + id.getLine()+":"+id.getCol()+"] -> variable \""+ id.getNom() + "\" indéfinie");
+        System.exit(0);
+    }
+    
+:}
+
+terminal PRG, STARTPRG, ENDPRG, CONSTANT, SEMICOLON, OPENPARENT;
+terminal CLOSEPARENT, COMMA, EQUAL;
+terminal READ, WRITE, WRITELN, IF, THEN, ELSE, ENDIF, WHILE, DO, ENDWHILE;
+terminal FOR, FROM, TO, ENDFOR, TRUE, FALSE;
+terminal Binaire PLUS, MINUS, TIMES, DIVIDE;
+terminal Binaire EQUALS, DIFF, INF, INFEQUAL, SUP, SUPEQUAL, AND, OR, TILDA, NOT;
+
+terminal String IDENT; 
+terminal String STRINGCONST;
+terminal TINTEGER, TBOOLEAN;
+terminal int INTEGERCONST;
+
+non terminal DeclarationProgramme program, header;
+non terminal List<Instruction> declar_lst;
+non terminal Corps body;
+non terminal List<Instruction> declars;
+non terminal Instruction declar, declar_var;
+non terminal List<Instruction> instr_lst;
+non terminal Instruction declar_const;
+non terminal Expression expr;
+non terminal Identifiant access;
+non terminal Expression operand;
+non terminal Instruction for_instr;
+non terminal Instruction while_instr;
+non terminal Instruction cond_instr;
+non terminal Instruction write_instr;
+non terminal Instruction read_instr;
+non terminal Instruction instr;
+non terminal Instruction assign;
+non terminal Unaire op_una;
+non terminal Binaire op_bin;
+
+non terminal List<Identifiant> l_ident;
+non terminal Type type;
+non terminal Type typebase;
+
+precedence left PLUS, MINUS, TIMES, DIVIDE, EQUALS, DIFF;
+precedence left INF, SUP, INFEQUAL, SUPEQUAL, AND, OR;
+precedence right TILDA, NOT;
+
+program           ::= header:prg declar_lst:dcls STARTPRG body:instrs ENDPRG {: 
+                                                                                prg.setDeclarations(dcls);
+                                                                                prg.setInstructions(instrs.getlstInstr());
+                                                                                RESULT = prg;
+                                                                            :};
+
+header            ::= PRG IDENT:s   {:  RESULT = new DeclarationProgramme(s, sleft, sright); :};
+
+declar_lst        ::= declars:ds {: RESULT = ds; :};
+
+declars           ::=  declar                   {: RESULT = new ArrayList<Instruction>(); :}
+                      | declars:ds declar:d     {: ds.add(d); RESULT = ds; :};
+
+declar            ::= declar_var {: :}
+                      | declar_const:dclCst {: RESULT = dclCst; :};
+
+declar_var        ::= type:t l_ident:lid SEMICOLON  {: 
+                                                        DeclarationsTable tableVar = DeclarationsTable.getInstance();
+                                                        for(Identifiant id : lid) {
+                                                            if( !tableVar.putVar(id, t)) { errorIdAlreadyDefined(id); }
+                                                        }
+                                                    :};
+
+l_ident           ::= IDENT:id                      {:  List<Identifiant> lid = new ArrayList<>();
+                                                        lid.add(new Identifiant((String)id, idleft, idright));
+                                                        RESULT = lid; 
+                                                    :}
+                      | l_ident:lid COMMA IDENT:id  {:  lid.add(new Identifiant((String)id, idleft, idright));
+                                                        RESULT = lid;
+                                                    :};
+
+type              ::= typebase:t {: RESULT=t; :};
+
+typebase          ::= TINTEGER      {: RESULT = new TypeInt(); :}
+                      | TBOOLEAN    {: RESULT = new TypeBoolean(); :};
+
+declar_const      ::= CONSTANT type:t IDENT:cst EQUAL expr:exp SEMICOLON    {:  DeclarationsTable tableConst = DeclarationsTable.getInstance();
+                                                                                Identifiant constant = new Identifiant(cst, cstleft, cstright);
+                                                                                if(!tableConst.putConst(constant, t)) { errorIdAlreadyDefined(constant); }
+                                                                                RESULT = new Affectation(constant, exp, cstleft, cstright);
+                                                                            :};
+
+expr              ::= expr:l op_bin:o expr:r                {:  o.setOperandeGauche(l); 
+                                                                o.setOperandeDroite(r); 
+                                                                RESULT = o; 
+                                                            :}
+                      | op_una:o expr:expr                  {:  o.setOperande(expr); 
+                                                                RESULT = o;
+                                                            :}
+                      | OPENPARENT expr:expr CLOSEPARENT    {: RESULT = new Parenthese(expr, exprleft, exprright); :}
+                      | operand:o                           {: RESULT = o; :};
+
+
+op_bin            ::= PLUS:o         {: RESULT = new Addition(oleft, oright);      :}
+                      | MINUS:o      {: RESULT = new Soustraction(oleft, oright);  :}
+                      | TIMES:o      {: RESULT = new Produit(oleft, oright);       :}
+                      | DIVIDE:o     {: RESULT = new Division(oleft, oright);      :}
+                      | EQUALS:o     {: RESULT = new Egal(oleft, oright);          :}
+                      | DIFF:o       {: RESULT = new Different(oleft, oright);     :}
+                      | INF:o        {: RESULT = new Inferieur(oleft, oright);     :}
+                      | SUP:o        {: RESULT = new Superieur(oleft, oright);     :}
+                      | INFEQUAL:o   {: RESULT = new InferieurEgal(oleft, oright); :}
+                      | SUPEQUAL:o   {: RESULT = new SuperieurEgal(oleft, oright); :}
+                      | AND:o        {: RESULT = new Et(oleft, oright);            :}
+                      | OR:o         {: RESULT = new Ou(oleft, oright);            :};
+
+op_una            ::= TILDA:o      {: RESULT = new InverseBits(oleft, oright); :}
+                      | NOT:o      {: RESULT = new Not(oleft, oright); :}
+                      | MINUS:o    {: RESULT = new Inverse(oleft, oright); :};
+
+operand           ::= access:r              {: RESULT = r; :}
+                      | INTEGERCONST:c      {: RESULT = new Nombre(c, cleft, cright); :}
+                      | TRUE:t              {: RESULT = new Booleen(true, tleft, tright); :}
+                      | FALSE:f             {: RESULT = new Booleen(false, fleft, fright); :};
+
+access            ::= IDENT:id  {: RESULT = new Identifiant(id, idleft, idright); :};
+
+
+body              ::=  instr_lst:lst {: RESULT = new Corps(lst, lstleft, lstright); :};
+
+instr_lst         ::=                           {: RESULT = new ArrayList<Instruction>(); :}
+                      | instr_lst:lst instr:i   {: lst.add(i); RESULT = lst; :};
+
+instr             ::= assign:instr          {: RESULT = instr; :}
+                      | write_instr:instr   {: RESULT = instr; :}
+                      | read_instr:instr    {: RESULT = instr; :}
+                      | cond_instr:instr    {: RESULT = instr; :}
+                      | while_instr:instr   {: RESULT = instr; :}
+                      | for_instr:instr     {: RESULT = instr; :};
+
+assign            ::= access:src EQUAL expr:dst SEMICOLON {: RESULT = new Affectation(src, dst, srcleft, srcright); :};
+
+write_instr       ::= WRITE expr:e SEMICOLON              {: RESULT = new Write(e, false, eleft, eright); :}
+                      | WRITELN expr:e SEMICOLON          {: RESULT = new Write(e, true, eleft, eright); :}
+                      | WRITE STRINGCONST:e SEMICOLON     {: RESULT = new Write(new Chaine(e, eleft, eright), false, eleft, eright); :}
+                      | WRITELN STRINGCONST:e SEMICOLON   {: RESULT = new Write(new Chaine(e, eleft, eright), true, eleft, eright); :};
+
+read_instr        ::= READ IDENT:id SEMICOLON   {:  Identifiant identifiant = new Identifiant(id, idleft, idright);
+                                                    DeclarationsTable table = DeclarationsTable.getInstance();
+                                                    if(!table.getVar().containsKey(id)) { errorIdNotDefined(identifiant); }
+                                                    RESULT = new Read(identifiant, DeclarationsTable.getInstance().getVar().get(id), idleft, idright); 
+                                                :};
+
+cond_instr        ::= IF expr:expr THEN body:alors ELSE body:sinon ENDIF    {: RESULT = new Condition(expr, alors, sinon.getlstInstr(), exprleft, exprright); :}
+                      | IF expr:expr THEN body:alors ENDIF                  {: RESULT = new Condition(expr, alors, new ArrayList<Instruction>(), exprleft, exprright); :};
+
+while_instr       ::= WHILE expr:tantque DO body:corps ENDWHILE             {: RESULT = new TantQue(tantque, corps, tantqueleft, tantqueright);  :};
+
+for_instr         ::= FOR IDENT:id FROM expr:lower TO expr:upper DO body:process ENDFOR {:  RESULT = new Pour(new Identifiant(id, idleft, idright), lower, upper, process, idleft, idright); :};

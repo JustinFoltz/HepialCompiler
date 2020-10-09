@@ -1,0 +1,8 @@
+programme testDeclar
+    entier i, j;
+    booleen a, b;
+debutprg
+    i = faux;
+    a = 12;
+    d = 15;
+finprg

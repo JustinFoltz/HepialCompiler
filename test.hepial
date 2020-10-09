@@ -1,0 +1,14 @@
+programme testDeclar
+    entier i;
+debutprg
+    ecrireln "";
+    ecrireln "Programme de test";
+    ecrireln "-----------------";
+    ecrireln "Programmes disponibles :";
+    ecrireln "   - pyramide.hepial";
+    ecrireln "   - game.hepial";
+    ecrireln "   - erreurs.hepial";
+    ecrireln "-----------------";
+    ecrireln "";
+finprg
+
