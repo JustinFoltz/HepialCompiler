@@ -20,13 +20,21 @@ LE programme peut être lancé avec la commande suivante :
 make
 ```
 
-Dans ce cas le compilateur utilisasera le fichier source *test.hepial* et generera le fichier bytecode *demo.class*.
+Dans ce cas le compilateur utilisera le fichier source *test.hepial* et générera le fichier bytecode *demo.class*.
 
-Pour modifier ces parametres, il est possible de lancer le programme avec les arguments suivants :
+Le fichier *test.hepial* fourni permet de lister les différents programmes implémentés :
+
+* *pyramide.hepial* : affiche une pyramide de ''*'' dont la taille dépend du nombre saisi par l'utilisateur.
+* *game.hepial* : jeu où l'utilisateur doit trouver un nombre avec comme indications "trop grand" ou "trop petit";
+* *erreurs.hepial* : programme contenant des erreurs. La localisation et la cause des erreurs sont spécifiées par le compilateur.
+
+Pour charger un programme ou modifier le fichier de sortie, il est possible de lancer le programme avec les arguments suivants :
 
 ```bash
 make hepial FILEIN=<src> FILEOUT=<dst>
 ```
+
+
 
 ## Fonctionnement
 
