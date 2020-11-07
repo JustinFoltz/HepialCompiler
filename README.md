@@ -15,13 +15,13 @@ HepialCompiler is a compiler of the simple invented Hepial language. It is based
 * *JAVA* (semantic analysis of the source program thanks to the reading of a tree built during the reduction of *CUP* rules. Generates a *JASMIN* program while reading the tree);
 * *JASMIN* : (generates the final image from the previously built program).
 
-## Running the project
+## How to run the project
 
 ### Prerequisites
 
 Package *jflex* must be installed.
 
-## Running the compiler
+### Running the project
 
 1. Clone the repository
 
