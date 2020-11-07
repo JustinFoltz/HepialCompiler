@@ -1,56 +1,54 @@
 # HepialCompiler
 
-**Réalisé par :** Quentin Leblanc, Justin Foltz
+**Developed by:** Quentin Leblanc, Justin Foltz
 
-**Date :** 06.2019
+**Date:** 06.2019
 
-## Le projet
+## The project
 
-Ce projet consiste à implémenter un compilateur d'un langage simplifié : Hepial.
+HepialCompiler is a compiler of the simple invented Hepial language. It is based on grammar rules reduction to generate `.class` files using Java.
 
-## Pré-requis :
+## Technology
 
-Le paquet *jflex* est nécessaire pour faire fonctionner ce compilateur.
+* *FLEX* (allows you to identify the language elements in the source program);
+* *CUP* (verifies that the syntax of the elements sent by *FLEX* respects the grammar rules specific to the *Hepial* language);
+* *JAVA* (semantic analysis of the source program thanks to the reading of a tree built during the reduction of *CUP* rules. Generates a *JASMIN* program while reading the tree);
+* *JASMIN* : (generates the final image from the previously built program).
 
-## Lancement du compilateur
+## Running the project
 
-Le programme peut être lancé avec la commande suivante : 
+### Prerequisites
 
-```bash
-make
-```
+Package *jflex* must be installed.
 
-Dans ce cas le compilateur utilisera le fichier source *test.hepial* et générera le fichier bytecode *demo.class*.
+## Running the compiler
 
-Le fichier *test.hepial* fourni permet de lister les différents programmes implémentés :
+1. Clone the repository
 
-* *pyramide.hepial* : affiche une pyramide de ''*'' dont la taille dépend du nombre saisi par l'utilisateur.
-* *game.hepial* : jeu où l'utilisateur doit trouver un nombre en 5 tentatives avec comme indications "trop grand" ou "trop petit";
-* *erreurs.hepial* : programme contenant des erreurs. La localisation et la cause des erreurs sont spécifiées par le compilateur.
+2. In the root folder, type one of the following command :
 
-Pour charger un programme ou modifier le fichier de sortie, il est possible de lancer le programme avec les arguments suivants :
+   * Compilation of default program in the `test` file into the `demo.class` output file
 
-```bash
-make hepial FILEIN=<src> FILEOUT=<dst>
-```
+     ```bash
+     make
+     ```
 
-La commande ci-dessous permet de supprimer les programmes précedement générés :
+   * Compilation of a user defined program
+
+     ```bash
+     make hepial FILEIN=<src> FILEOUT=<dst>
+     ```
+
+The program `test` provided display a list of different simple programs implemented as demo :
+
+- *pyramid.hepial*: displays a pyramid of ''*'' whose size depends on the number entered by the user;
+- *game.hepial* : game where the user has to find a number in 5 attempts with the indications "too big" or "too small";
+- *errors.hepial* : program containing errors. The location and cause of errors are specified by the compiler.
+
+## Cleaning the project
+
+The command below allows you to clean the compiled files :
 
 ```bash
 make clean
 ```
-
-
-
-## Fonctionnement
-
-![](./fonctionnement.jpg)
-
-* *FLEX* : permet d'identifier les éléments du langage dans le programme source
-* *CUP* : vérifie que la syntaxe des éléments envoyés par *FLEX* respecte les règles de grammaire spécifiques au langage *Hepial*;
-* *JAVA* : analyse sémantique du programme source grâce à la lecture d'un arbre construit pendant la réduction des règles de *CUP*. Génère un programme *JASMIN* durant la lecture de l'arbre;
-* *JASMIN* : génère l'image finale à partir du programme précédemment construit.
-
-## Arbre abstrait
-
-![](./arbre.jpg)
