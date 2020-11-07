@@ -8,14 +8,14 @@
 
 HepialCompiler is a compiler of the simple invented Hepial language. It is based on grammar rules reduction to generate `.class` files using Java.
 
-## Technology
+## Technologies
 
 * *FLEX* (allows you to identify the language elements in the source program);
 * *CUP* (verifies that the syntax of the elements sent by *FLEX* respects the grammar rules specific to the *Hepial* language);
 * *JAVA* (semantic analysis of the source program thanks to the reading of a tree built during the reduction of *CUP* rules. Generates a *JASMIN* program while reading the tree);
 * *JASMIN* : (generates the final image from the previously built program).
 
-## How to run the project
+## How to run the project ?
 
 ### Prerequisites
 
@@ -45,7 +45,7 @@ The program `test` provided display a list of different simple programs implemen
 - *game.hepial* : game where the user has to find a number in 5 attempts with the indications "too big" or "too small";
 - *errors.hepial* : program containing errors. The location and cause of errors are specified by the compiler.
 
-## Cleaning the project
+### Cleaning the project
 
 The command below allows you to clean the compiled files :
 
